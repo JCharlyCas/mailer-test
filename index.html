@@ -567,12 +567,12 @@
 
     <div class="code-block">
 <span class="comment">&lt;!-- Enlace básico --&gt;</span>
-<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"mailto:hola@tudominio.com"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"mailto:<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="325a5d5e53724647565d5f5b5c5b5d1c515d5f">[email&#160;protected]</a>"</span><span class="tag">&gt;</span>
   Escríbeme
 <span class="tag">&lt;/a&gt;</span>
 
 <span class="comment">&lt;!-- Con asunto y cuerpo pre-rellenados --&gt;</span>
-<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"mailto:hola@tudominio.com
+<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"mailto:<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="83ebecefe2c3f7f6e7eceeeaedeaecade0ecee">[email&#160;protected]</a>
   ?subject=Hola desde tu web
   &amp;body=Me interesa tu servicio..."</span><span class="tag">&gt;</span>
   Contactar ahora
@@ -581,7 +581,7 @@
 
     <p><strong>Ventaja:</strong> sin backend, sin código extra. <strong>Limitación:</strong> depende de que el usuario tenga un cliente de correo configurado.</p>
 
-    <a href="mailto:hola@mailertest.com?subject=Mensaje desde MAILER TEST&body=Hola, te escribo desde tu página de prueba." class="mailto-live">
+    <a href="/cdn-cgi/l/email-protection#1c7473707d5c717d7570796e68796f68327f7371236f697e76797f68215179726f7d76793c78796f78793c515d5550594e3c48594f483a7e737865215473707d303c68793c796f7f6e757e733c78796f78793c68693c6cdfbd7b75727d3c78793c6c6e69797e7d32" class="mailto-live">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4C2.9 4 2 4.9 2 6v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
       Probar enlace mailto
     </a>
@@ -651,11 +651,24 @@
   <div class="form-wrap">
     <form id="contactForm" novalidate>
       <!-- Web3Forms access key — reemplaza con la tuya en web3forms.com -->
-      <input type="hidden" name="access_key" value="ced8f48d-4c95-46b4-9c82-630fd2bc2795">
+      <input type="hidden" name="access_key" value="TU_ACCESS_KEY_AQUI">
+
+      <!-- ── Respuesta automática al usuario ── -->
+      <!-- Nombre del remitente que verá el usuario en su bandeja -->
+      <input type="hidden" name="from_name" value="MAILER TEST">
+      <!-- Le dice a Web3Forms que use el correo del campo "email" para responder -->
+      <input type="hidden" name="replyto" value="">
+      <!-- Mensaje que recibirá el usuario automáticamente -->
+      <input type="hidden" name="autoresponse" value="¡Hola! Gracias por tu mensaje, lo hemos recibido correctamente. Te responderemos a la brevedad posible. — Equipo MAILER TEST">
 
       <div class="form-group">
         <label for="email">Tu correo electrónico</label>
         <input type="email" id="email" name="email" placeholder="nombre@ejemplo.com" required />
+      </div>
+
+      <div class="form-group">
+        <label for="nombre">Tu nombre</label>
+        <input type="text" id="nombre" name="name" placeholder="¿Cómo te llamas?" required />
       </div>
 
       <div class="form-group">
@@ -669,7 +682,7 @@
       </div>
 
       <button type="submit" class="btn-send" id="btnSend">Enviar mensaje</button>
-      <p class="form-note">Conectado a Web3Forms · Sin backend requerido</p>
+      <p class="form-note">✉️ Recibirás una confirmación automática en tu correo</p>
     </form>
   </div>
 </section>
@@ -707,7 +720,7 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // ── Año dinámico
   document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -742,10 +755,11 @@
 
     // Validación básica
     const email = form.email.value.trim();
+    const nombre = form.name.value.trim();
     const asunto = form.subject.value.trim();
     const mensaje = form.message.value.trim();
 
-    if (!email || !asunto || !mensaje) {
+    if (!email || !nombre || !asunto || !mensaje) {
       showToast('⚠️ Por favor completa todos los campos.');
       return;
     }
@@ -756,31 +770,13 @@
       return;
     }
 
+    // Asigna dinámicamente el replyto con el correo del usuario
+    form.querySelector('[name="replyto"]').value = email;
+
     btnSend.disabled = true;
     btnSend.textContent = 'Enviando...';
 
     try {
       const formData = new FormData(form);
       const response = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        body: formData
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        showToast('✅ Mensaje enviado correctamente.');
-        form.reset();
-      } else {
-        showToast('❌ Error al enviar. Revisa tu access_key.');
-      }
-    } catch (err) {
-      showToast('❌ Error de conexión. Inténtalo de nuevo.');
-    }
-
-    btnSend.disabled = false;
-    btnSend.textContent = 'Enviar mensaje';
-  });
-</script>
-</body>
-</html>
+        method: 
