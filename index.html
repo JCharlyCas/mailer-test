@@ -658,8 +658,10 @@
       <input type="hidden" name="from_name" value="MAILER TEST">
       <!-- Le dice a Web3Forms que use el correo del campo "email" para responder -->
       <input type="hidden" name="replyto" value="">
-      <!-- Mensaje que recibirá el usuario automáticamente -->
-      <input type="hidden" name="autoresponse" value="¡Hola! Gracias por tu mensaje, lo hemos recibido correctamente. Te responderemos a la brevedad posible. — Equipo MAILER TEST">
+      <!-- Asunto del correo automático que recibirá el usuario -->
+      <input type="hidden" name="replyto_subject" value="Hemos recibido tu mensaje — MAILER TEST">
+      <!-- Cuerpo del correo automático que recibirá el usuario -->
+      <input type="hidden" name="autoresponse" value="¡Hola! Gracias por escribirnos. Hemos recibido tu mensaje correctamente y te responderemos a la brevedad. — Equipo MAILER TEST">
 
       <div class="form-group">
         <label for="email">Tu correo electrónico</label>
@@ -771,20 +773,20 @@
       showToast('⚠️ Ingresa un correo electrónico válido.');
       return;
     }
-
-    // Asigna dinámicamente el replyto con el correo del usuario
-    form.querySelector('[name="replyto"]').value = email;
-
-    // Deshabilita el botón mientras se procesa
+// Deshabilita el botón mientras se procesa
     btnSend.disabled = true;
     btnSend.textContent = 'Enviando...';
-
+ 
     try {
+      // Asigna replyto ANTES de construir el FormData
+      // Esto garantiza que Web3Forms envíe la respuesta automática al correo del usuario
+      form.querySelector('[name="replyto"]').value = email;
       const formData = new FormData(form);
       const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         body: formData
       });
+
 
       const data = await response.json();
 
