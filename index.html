@@ -720,7 +720,7 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
   // ── Año dinámico
   document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -746,18 +746,20 @@
     setTimeout(() => t.classList.remove('show'), duration);
   }
 
-  // ── Form submit (Web3Forms)
+  // ── Form submit — intercepta el submit y usa fetch hacia Web3Forms
   const form = document.getElementById('contactForm');
   const btnSend = document.getElementById('btnSend');
 
-  form.addEventListener('submit', async (e) => {
+  form.addEventListener('submit', async function(e) {
+    // MUY IMPORTANTE: detiene el submit nativo del navegador
     e.preventDefault();
+    e.stopPropagation();
 
     // Validación básica
-    const email = form.email.value.trim();
-    const nombre = form.name.value.trim();
-    const asunto = form.subject.value.trim();
-    const mensaje = form.message.value.trim();
+    const email   = document.getElementById('email').value.trim();
+    const nombre  = document.getElementById('nombre').value.trim();
+    const asunto  = document.getElementById('asunto').value.trim();
+    const mensaje = document.getElementById('mensaje').value.trim();
 
     if (!email || !nombre || !asunto || !mensaje) {
       showToast('⚠️ Por favor completa todos los campos.');
@@ -773,10 +775,35 @@
     // Asigna dinámicamente el replyto con el correo del usuario
     form.querySelector('[name="replyto"]').value = email;
 
+    // Deshabilita el botón mientras se procesa
     btnSend.disabled = true;
     btnSend.textContent = 'Enviando...';
 
     try {
       const formData = new FormData(form);
       const response = await fetch('https://api.web3forms.com/submit', {
-        method: 
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        showToast('✅ Mensaje enviado. Revisa tu correo para la confirmación.');
+        form.reset();
+      } else {
+        console.error('Web3Forms error:', data);
+        showToast('❌ Error al enviar. Verifica tu access_key en Web3Forms.');
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+      showToast('❌ Error de conexión. Inténtalo de nuevo.');
+    }
+
+    // Reactiva el botón
+    btnSend.disabled = false;
+    btnSend.textContent = 'Enviar mensaje';
+  });
+</script>
+</body>
+</html>
